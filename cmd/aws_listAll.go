@@ -1,12 +1,12 @@
 package cmd
 
 import (
-	"amictl/providers"
 	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/brunopadz/amictl/providers"
 	"github.com/spf13/cobra"
 )
 
