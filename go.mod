@@ -1,6 +1,6 @@
-module amictl
-
 go 1.14
+
+module github.com/brunopadz/amictl
 
 require (
 	github.com/aws/aws-sdk-go v1.31.9
