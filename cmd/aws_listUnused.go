@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/brunopadz/amictl/commons"
 	"github.com/brunopadz/amictl/providers"
 	"github.com/spf13/cobra"
 )
@@ -33,8 +35,13 @@ var listUnused = &cobra.Command{
 		}
 
 		// Compare AMI list
-		l := providers.AwsListNotUsed(a, s)
-		fmt.Println(l)
+		l, u := providers.AwsListNotUsed(a, s)
+
+		n := commons.Compare(l, u)
+		r := strings.Join(n, "\n")
+
+		fmt.Println(r)
+		fmt.Println("Total of", len(n), "not used AMIs")
 
 	},
 }

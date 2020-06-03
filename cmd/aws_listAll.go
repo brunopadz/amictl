@@ -38,6 +38,7 @@ var listAll = &cobra.Command{
 
 		r := strings.Join(l, "\n")
 		fmt.Println(r)
+		fmt.Println("Total of", len(l), "AMIs")
 
 	},
 }

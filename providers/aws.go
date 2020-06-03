@@ -2,12 +2,10 @@ package providers
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/brunopadz/amictl/commons"
 )
 
 func AwsSession(r string) *ec2.EC2 {
@@ -34,7 +32,7 @@ func AwsListAll(a *ec2.DescribeImagesOutput, s *ec2.EC2) []string {
 	return all
 }
 
-func AwsListNotUsed(a *ec2.DescribeImagesOutput, s *ec2.EC2) string {
+func AwsListNotUsed(a *ec2.DescribeImagesOutput, s *ec2.EC2) ([]string, []string) {
 
 	all := []string{}
 	used := []string{}
@@ -64,8 +62,5 @@ func AwsListNotUsed(a *ec2.DescribeImagesOutput, s *ec2.EC2) string {
 		}
 	}
 
-	nused := commons.Compare(all, used)
-	result := strings.Join(nused, "\n")
-
-	return result
+	return all, used
 }
