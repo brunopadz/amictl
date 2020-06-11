@@ -9,6 +9,10 @@ amictl is a super simple cli app to control your AMIs and Images
 
 ## How to use
 
+Download using go get:
+
+`go get github.com/brunopadz/amictl`
+
 ❗️ AWS is the only cloud provider supported to this date.
 
 **List all AMIs**
