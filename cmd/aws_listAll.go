@@ -24,15 +24,18 @@ func init() {
 // ListAllCommand return a callable to list all ami
 func ListAllCommand() func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
+		var accountID = aws.String(args[0])
+		var region = aws.String(args[1])
+
 		// Creates a input filter to get AMIs
 		f := &ec2.DescribeImagesInput{
 			Owners: []*string{
-				aws.String(args[0]),
+				accountID,
 			},
 		}
 
 		// Establishes new authenticated session to AWS
-		s := providers.AwsSession(args[1])
+		s := providers.AwsSession(region)
 
 		// Filter AMIs based on input filter
 		a, err := s.DescribeImages(f)
@@ -41,8 +44,8 @@ func ListAllCommand() func(cmd *cobra.Command, args []string) {
 		}
 
 		l := providers.AwsListAll(a)
-
 		r := strings.Join(l, "\n")
+
 		fmt.Println(r)
 		fmt.Println("Total of", len(l), "AMIs")
 	}

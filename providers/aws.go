@@ -9,50 +9,40 @@ import (
 )
 
 // AwsSession create a new instance of EC2 client
-func AwsSession(r string) *ec2.EC2 {
+func AwsSession(r *string) *ec2.EC2 {
+	var config = &aws.Config{
+		Region: r,
+	}
 
-	sess, err := session.NewSession(&aws.Config{Region: aws.String(r)})
+	sess, err := session.NewSession(config)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	svc := ec2.New(sess)
-
-	return svc
+	return ec2.New(sess)
 }
 
 // AwsListAll list all available images
-func AwsListAll(a *ec2.DescribeImagesOutput) []string {
-
-	var all []string
-
+func AwsListAll(a *ec2.DescribeImagesOutput) (all []string) {
 	for _, v := range a.Images {
-		inu := v.ImageId
-
-		all = append(all, aws.StringValue(inu))
+		all = append(all, aws.StringValue(v.ImageId))
 	}
 	return all
 }
 
 // AwsListNotUsed list all images that are not being used
-func AwsListNotUsed(a *ec2.DescribeImagesOutput, s *ec2.EC2) ([]string, []string) {
-
-	var all []string
-	var used []string
-
+func AwsListNotUsed(a *ec2.DescribeImagesOutput, s *ec2.EC2) (all[]string, used[]string) {
 	for _, v := range a.Images {
-		inu := v.ImageId
-
 		ec2f := &ec2.DescribeInstancesInput{
 			Filters: []*ec2.Filter{
 				{
 					Name:   aws.String("image-id"),
-					Values: []*string{aws.String(*inu)},
+					Values: []*string{aws.String(*v.ImageId)},
 				},
 			},
 		}
 
-		all = append(all, aws.StringValue(inu))
+		all = append(all, aws.StringValue(v.ImageId))
 
 		r, err := s.DescribeInstances(ec2f)
 		if err != nil {
@@ -61,7 +51,7 @@ func AwsListNotUsed(a *ec2.DescribeImagesOutput, s *ec2.EC2) ([]string, []string
 
 		for _, res := range r.Reservations {
 			for range res.Instances {
-				used = append(used, aws.StringValue(*&inu))
+				used = append(used, aws.StringValue(v.ImageId))
 			}
 		}
 	}
