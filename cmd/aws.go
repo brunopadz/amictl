@@ -16,7 +16,7 @@ var awsCmd = &cobra.Command{
 	Long:  `Manages AWS AMIs by account and region`,
 	Example: `  amictl aws list-all --account 123456789012 --region us-east-1
 amictl aws list-unused --account 123456789012 --region us-east-1`,
-  TraverseChildren: true,
+  	TraverseChildren: true,
 	Run: AWSCommand(),
 }
 
