@@ -12,9 +12,10 @@ import (
 var listAllCommand = &cobra.Command{
 	Use:   "list-all",
 	Short: "List all AMIs",
-	Long:  "List all AMIs for a given region and account.",
+	Long:    `List all AMIs for a given region and account.`,
+	Example: `  amictl aws list-all --account 123456789012 --region us-east-1`,
 	Args:  cobra.MaximumNArgs(2),
-	Run:   ListAllCommand(),
+	RunE:   ListAllCommand(),
 }
 
 func init() {
@@ -22,8 +23,8 @@ func init() {
 }
 
 // ListAllCommand return a callable to list all ami
-func ListAllCommand() func(cmd *cobra.Command, args []string) {
-	return func(cmd *cobra.Command, args []string) {
+func ListAllCommand() func(cmd *cobra.Command, args []string) error {
+	return func(cmd *cobra.Command, args []string) error {
 		var accountID = aws.String(args[0])
 		var region = aws.String(args[1])
 
@@ -41,6 +42,7 @@ func ListAllCommand() func(cmd *cobra.Command, args []string) {
 		a, err := s.DescribeImages(f)
 		if err != nil {
 			fmt.Println(err)
+      return err
 		}
 
 		l := providers.AwsListAll(a)
@@ -48,5 +50,7 @@ func ListAllCommand() func(cmd *cobra.Command, args []string) {
 
 		fmt.Println(r)
 		fmt.Println("Total of", len(l), "AMIs")
+    
+    return nil
 	}
 }

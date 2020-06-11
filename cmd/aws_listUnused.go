@@ -12,11 +12,12 @@ import (
 )
 
 var listUsedCommand = &cobra.Command{
-	Use:   "list-unused",
-	Short: "List unused AMIs",
-	Long:  "List not used AMIs for a given region and account.",
+	Use:     "list-unused",
+	Short:   "List unused AMIs",
+	Long:    `List not used AMIs for a given region and account.`,
+	Example: `  amictl aws list-unused --account 123456789012 --region us-east-1`,
 	Args:  	cobra.MaximumNArgs(2),
-	Run: 	ListUnusedCommand(),
+	RunE: 	ListUnusedCommand(),
 }
 
 func init() {
@@ -24,8 +25,8 @@ func init() {
 }
 
 // ListUnusedCommand return a callable to list unused ami
-func ListUnusedCommand() func(cmd *cobra.Command, args []string) {
-	return func(cmd *cobra.Command, args []string) {
+func ListUnusedCommand() func(cmd *cobra.Command, args []string) error {
+	return func(cmd *cobra.Command, args []string) error {
 		var accountID = aws.String(args[0])
 		var region = aws.String(args[1])
 
@@ -43,6 +44,7 @@ func ListUnusedCommand() func(cmd *cobra.Command, args []string) {
 		a, err := s.DescribeImages(f)
 		if err != nil {
 			fmt.Println(err)
+      return err
 		}
 
 		// Compare AMI list
@@ -53,5 +55,7 @@ func ListUnusedCommand() func(cmd *cobra.Command, args []string) {
 
 		fmt.Println(r)
 		fmt.Println("Total of", len(n), "not used AMIs")
+    
+    return nil
 	}
 }
