@@ -26,8 +26,8 @@ func init() {
 	awsCmd.PersistentFlags().StringVarP(&account, "account", "a", "", "AWS account ID")
 	awsCmd.PersistentFlags().StringVarP(&region, "region", "r", "", "AWS region ID")
 
-	awsCmd.MarkFlagRequired("account")
-	awsCmd.MarkFlagRequired("region")
+	_ = awsCmd.MarkFlagRequired("account")
+	_ = awsCmd.MarkFlagRequired("region")
 }
 
 // AWSCommand print the available features from amictl

@@ -42,7 +42,7 @@ func ListAllCommand() func(cmd *cobra.Command, args []string) error {
 		a, err := s.DescribeImages(f)
 		if err != nil {
 			fmt.Println(err)
-      return err
+      		return err
 		}
 
 		l := providers.AwsListAll(a)
@@ -51,6 +51,6 @@ func ListAllCommand() func(cmd *cobra.Command, args []string) error {
 		fmt.Println(r)
 		fmt.Println("Total of", len(l), "AMIs")
     
-    return nil
+    	return nil
 	}
 }

@@ -44,7 +44,7 @@ func ListUnusedCommand() func(cmd *cobra.Command, args []string) error {
 		a, err := s.DescribeImages(f)
 		if err != nil {
 			fmt.Println(err)
-      return err
+      		return err
 		}
 
 		// Compare AMI list
@@ -56,6 +56,6 @@ func ListUnusedCommand() func(cmd *cobra.Command, args []string) error {
 		fmt.Println(r)
 		fmt.Println("Total of", len(n), "not used AMIs")
     
-    return nil
+		return nil
 	}
 }
