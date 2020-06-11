@@ -13,14 +13,15 @@ var awsCmd = &cobra.Command{
 With amictl aws it's possible to:
  - List all AMIs
  - List unused AMIs`,
-	Run: WelcomeCommand(),
+	Run: AWSCommand(),
 }
 
 func init() {
 	rootCmd.AddCommand(awsCmd)
 }
 
-func WelcomeCommand() func(cmd *cobra.Command, args []string) {
+// AWSCommand print the available features from amictl
+func AWSCommand() func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
 		fmt.Println(cmd.Long)
 	}
