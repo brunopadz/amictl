@@ -11,13 +11,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// listAmiCmd represents the listAmi command
-var listUnused = &cobra.Command{
+var listUsedCommand = &cobra.Command{
 	Use:   "list-unused",
 	Short: "List unused AMIs",
-	Long:  `List not used AMIs for a given region and account.`,
-	Args:  cobra.MaximumNArgs(2),
-	Run: func(cmd *cobra.Command, args []string) {
+	Long:  "List not used AMIs for a given region and account.",
+	Args:  	cobra.MaximumNArgs(2),
+	Run: 	ListUnusedCommand(),
+}
+
+func init() {
+	awsCmd.AddCommand(listUsedCommand)
+}
+
+// ListUnusedCommand return a callable to list unused ami
+func ListUnusedCommand() func(cmd *cobra.Command, args []string) {
+	return func(cmd *cobra.Command, args []string) {
 		// Creates a input filter to get AMIs
 		f := &ec2.DescribeImagesInput{
 			Owners: []*string{
@@ -42,10 +50,5 @@ var listUnused = &cobra.Command{
 
 		fmt.Println(r)
 		fmt.Println("Total of", len(n), "not used AMIs")
-
-	},
-}
-
-func init() {
-	awsCmd.AddCommand(listUnused)
+	}
 }

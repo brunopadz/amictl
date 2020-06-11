@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
+// AwsSession create a new instance of EC2 client
 func AwsSession(r string) *ec2.EC2 {
 
 	sess, err := session.NewSession(&aws.Config{Region: aws.String(r)})
@@ -20,9 +21,10 @@ func AwsSession(r string) *ec2.EC2 {
 	return svc
 }
 
-func AwsListAll(a *ec2.DescribeImagesOutput, s *ec2.EC2) []string {
+// AwsListAll list all available images
+func AwsListAll(a *ec2.DescribeImagesOutput) []string {
 
-	all := []string{}
+	var all []string
 
 	for _, v := range a.Images {
 		inu := v.ImageId
@@ -32,10 +34,11 @@ func AwsListAll(a *ec2.DescribeImagesOutput, s *ec2.EC2) []string {
 	return all
 }
 
+// AwsListNotUsed list all images that are not being used
 func AwsListNotUsed(a *ec2.DescribeImagesOutput, s *ec2.EC2) ([]string, []string) {
 
-	all := []string{}
-	used := []string{}
+	var all []string
+	var used []string
 
 	for _, v := range a.Images {
 		inu := v.ImageId
@@ -52,13 +55,14 @@ func AwsListNotUsed(a *ec2.DescribeImagesOutput, s *ec2.EC2) ([]string, []string
 		all = append(all, aws.StringValue(inu))
 
 		r, err := s.DescribeInstances(ec2f)
-		for _, res := range r.Reservations {
-			for range res.Instances {
-				used = append(used, string(aws.StringValue(*&inu)))
-			}
-		}
 		if err != nil {
 			fmt.Println(err)
+		}
+
+		for _, res := range r.Reservations {
+			for range res.Instances {
+				used = append(used, aws.StringValue(*&inu))
+			}
 		}
 	}
 

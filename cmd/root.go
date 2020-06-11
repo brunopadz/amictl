@@ -7,8 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cfgFile string
-
 var rootCmd = &cobra.Command{
 	Use:   "amictl",
 	Short: "amictl is a super simple cli app to control your AMIs and cloud images.",
@@ -17,6 +15,7 @@ var rootCmd = &cobra.Command{
 	AWS is the only cloud provider supported.`,
 }
 
+// Execute this function run ListAllCommand
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
