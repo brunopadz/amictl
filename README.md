@@ -11,7 +11,10 @@ amictl is a super simple cli app to control your AMIs and Images
 
 ❗️ AWS is the only cloud provider supported to this date.
 
-- Make sure AWS CLI is installed and properly configured.
+- Make sure AWS CLI is installed and properly configured. amictl uses access and secret keys to authenticate to AWS.
+  - You can configure it using [Environment Variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html) or through [cli](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
+
+More docs coming soon.
 
 ## How to use
 
