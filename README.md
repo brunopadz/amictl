@@ -1,5 +1,5 @@
 # amictl
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/brunopadz/amictl?style=flat-square) ![GitHub](https://img.shields.io/github/license/brunopadz/amictl?style=flat-square)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/brunopadz/amictl?style=flat-square) ![GitHub](https://img.shields.io/github/license/brunopadz/amictl?style=flat-square) ![Drone (cloud)](https://img.shields.io/drone/build/brunopadz/amictl?style=flat-square)
 
 amictl is a super simple cli app to control your AMIs and Images
 

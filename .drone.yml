@@ -1,0 +1,99 @@
+---
+kind: pipeline
+type: docker
+name: build-linux-amd64
+
+platform:
+  arch: amd64
+  os: linux
+
+steps:
+  - name: build
+    image: golang:1.14.2
+    commands:
+    - go build
+    environment:
+      GOARCH: amd64
+      GOOS: linux
+
+  - name: publish
+    image: plugins/github-release
+    settings:
+      api_key: 
+        from_secret: GH_TOKEN
+      files: amictl
+      title: linux
+    when:
+      event: tag
+# ---
+# kind: pipeline
+# type: docker
+# name: build-linux-arm64
+
+# platform:
+#   arch: arm64
+#   os: linux
+
+# steps:
+#   - name: build
+#     image: golang:1.14.2
+#     commands:
+#     - go build
+#     - ls -lah
+#     environment:
+#       GOARCH: arm64
+#       GOOS: linux
+# ---
+# kind: pipeline
+# type: docker
+# name: build-linux-arm
+
+# platform:
+#   arch: arm
+#   os: linux
+
+# steps:
+#   - name: build
+#     image: golang:1.14.2
+#     commands:
+#     - go build
+#     - ls -lah
+#     environment:
+#       GOARCH: arm
+#       GOOS: linux
+# ---
+# kind: pipeline
+# type: docker
+# name: build-darwin-amd64
+
+# platform:
+#   arch: amd64
+#   os: linux
+
+# steps:
+#   - name: build
+#     image: golang:1.14.2
+#     commands:
+#     - go build
+#     - ls -lah
+#     environment:
+#       GOARCH: amd64
+#       GOOS: darwin
+# ---
+# kind: pipeline
+# type: docker
+# name: build-windows-amd64
+
+# platform:
+#   arch: amd64
+#   os: linux
+
+# steps:
+#   - name: build
+#     image: golang:1.14.2
+#     commands:
+#     - go build -o amictl.exe
+#     - ls -lah
+#     environment:
+#       GOARCH: 386
+#       GOOS: windows
