@@ -5,15 +5,19 @@ amictl is a super simple cli app to control your AMIs and Images
 
 ## Disclaimer
 
-- There are a ton of features that need to be implemented. Just check the [contributing guide](CONTRIBUTING.md) and the opened [issues](https://github.com/brunopadz/amictl/issues).
+- There are a ton of features that still need to be implemented. Just check the [contributing guide](CONTRIBUTING.md) and the opened [issues](https://github.com/brunopadz/amictl/issues).
+
+## Configuring
+
+❗️ AWS is the only cloud provider supported to this date.
+
+- Make sure AWS CLI is installed and properly configured.
 
 ## How to use
 
-Download using go get:
-
-`go get github.com/brunopadz/amictl`
-
-❗️ AWS is the only cloud provider supported to this date.
+- Download using go get:
+  
+  `go get github.com/brunopadz/amictl`
 
 **List all AMIs**
 
