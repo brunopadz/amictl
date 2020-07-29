@@ -67,8 +67,6 @@ steps:
       from_secret: GH_TOKEN
     files: amictl-linux-arm64.zip
     title: linux
-  # depends_on:
-  #   - build-linux-amd64
   when:
     event: tag
 
@@ -106,8 +104,6 @@ steps:
   when:
     event: tag
 
-# depends_on:
-# - build-linux-amd64
 ---
 kind: pipeline
 type: docker
@@ -143,8 +139,6 @@ steps:
   when:
     event: tag
 
-# depends_on:
-# - build-linux-amd64    
 ---
 kind: pipeline
 type: docker
@@ -180,5 +174,3 @@ steps:
   when:
     event: tag
 
-#  depends_on:
-# - build-linux-amd64   
