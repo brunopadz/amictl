@@ -8,91 +8,169 @@ platform:
   os: linux
 
 steps:
-  - name: build
-    image: golang:1.14.2
-    commands:
-    - go build
-    environment:
-      GOARCH: amd64
-      GOOS: linux
+- name: build
+  image: golang:1.14.2
+  commands:
+  - go build
+  environment:
+    GOARCH: amd64
+    GOOS: linux
 
-  - name: publish
-    image: plugins/github-release
-    settings:
-      api_key: 
-        from_secret: GH_TOKEN
-      files: amictl
-    when:
-      event: tag
-# ---
-# kind: pipeline
-# type: docker
-# name: build-linux-arm64
+- name: prepare for release
+  image: alpine:latest
+  commands:
+  - apk add --update zip
+  - zip -r amictl-linux-amd64.zip amictl
+  when:
+    event: tag
 
-# platform:
-#   arch: arm64
-#   os: linux
+- name: publish
+  image: plugins/github-release
+  settings:
+    api_key: 
+      from_secret: GH_TOKEN
+    files: amictl-linux-amd64.zip
+    title: linux
+  when:
+    event: tag
 
-# steps:
-#   - name: build
-#     image: golang:1.14.2
-#     commands:
-#     - go build
-#     - ls -lah
-#     environment:
-#       GOARCH: arm64
-#       GOOS: linux
-# ---
-# kind: pipeline
-# type: docker
-# name: build-linux-arm
+---
+kind: pipeline
+type: docker
+name: build-linux-arm64
 
-# platform:
-#   arch: arm
-#   os: linux
+platform:
+  arch: arm64
+  os: linux
 
-# steps:
-#   - name: build
-#     image: golang:1.14.2
-#     commands:
-#     - go build
-#     - ls -lah
-#     environment:
-#       GOARCH: arm
-#       GOOS: linux
-# ---
-# kind: pipeline
-# type: docker
-# name: build-darwin-amd64
+steps:
+- name: build
+  image: golang:1.14.2
+  commands:
+  - go build
+  environment:
+    GOARCH: arm64
+    GOOS: linux
 
-# platform:
-#   arch: amd64
-#   os: linux
+- name: prepare for release
+  image: alpine:latest
+  commands:
+  - apk add --update zip
+  - zip -r amictl-linux-arm64.zip amictl
+  when:
+    event: tag
 
-# steps:
-#   - name: build
-#     image: golang:1.14.2
-#     commands:
-#     - go build
-#     - ls -lah
-#     environment:
-#       GOARCH: amd64
-#       GOOS: darwin
-# ---
-# kind: pipeline
-# type: docker
-# name: build-windows-amd64
+- name: publish
+  image: plugins/github-release
+  settings:
+    api_key: 
+      from_secret: GH_TOKEN
+    files: amictl-linux-arm64.zip
+    title: linux
+  when:
+    event: tag
 
-# platform:
-#   arch: amd64
-#   os: linux
+---
+kind: pipeline
+type: docker
+name: build-linux-arm
 
-# steps:
-#   - name: build
-#     image: golang:1.14.2
-#     commands:
-#     - go build -o amictl.exe
-#     - ls -lah
-#     environment:
-#       GOARCH: 386
-#       GOOS: windows
+platform:
+  arch: arm
+  os: linux
+
+steps:
+- name: build
+  image: golang:1.14.2
+  commands:
+  - go build
+  environment:
+    GOARCH: arm
+    GOOS: linux
+- name: prepare for release
+  image: alpine:latest
+  commands:
+  - apk add --update zip
+  - zip -r amictl-linux-arm.zip amictl
+  when:
+    event: tag
+
+- name: publish
+  image: plugins/github-release
+  settings:
+    api_key: 
+      from_secret: GH_TOKEN
+    files: amictl-linux-arm.zip
+  when:
+    event: tag
+
+---
+kind: pipeline
+type: docker
+name: build-darwin-amd64
+
+platform:
+  arch: amd64
+  os: linux
+
+steps:
+- name: build
+  image: golang:1.14.2
+  commands:
+  - go build
+  environment:
+    GOARCH: amd64
+    GOOS: darwin
+
+- name: prepare for release
+  image: alpine:latest
+  commands:
+  - apk add --update zip
+  - zip -r amictl-macos-amd64.zip amictl
+  when:
+    event: tag
+
+- name: publish
+  image: plugins/github-release
+  settings:
+    api_key: 
+      from_secret: GH_TOKEN
+    files: amictl-macos-amd64.zip
+  when:
+    event: tag
+
+---
+kind: pipeline
+type: docker
+name: build-windows-amd64
+
+platform:
+  arch: amd64
+  os: linux
+
+steps:
+- name: build
+  image: golang:1.14.2
+  commands:
+  - go build -o amictl.exe
+  environment:
+    GOARCH: 386
+    GOOS: windows
+
+- name: prepare for release
+  image: alpine:latest
+  commands:
+  - apk add --update zip
+  - zip -r amictl-windows.zip amictl.exe
+  when:
+    event: tag
+
+- name: publish
+  image: plugins/github-release
+  settings:
+    api_key: 
+      from_secret: GH_TOKEN
+    files: amictl-windows.zip
+  when:
+    event: tag
+
