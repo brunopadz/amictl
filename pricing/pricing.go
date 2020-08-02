@@ -1,10 +1,10 @@
 package pricing
 
 const us_east_1 = 0.023 // Virginia
-const us_east_2 = 0.0   // Ohio
-const us_west_1 = 0.0   // Califórnia
-const us_west_2 = 0.0   // Oregon
-const sa_east_1 = 0.023 // São Paulo
+const us_east_2 = 0.023 // Ohio
+const us_west_1 = 0.026 // Califórnia
+const us_west_2 = 0.023 // Oregon
+const sa_east_1 = 0.040 // São Paulo
 
 const default_value = 0.02
 
