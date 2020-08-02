@@ -40,7 +40,7 @@ Total of 7 AMIs
 **List not used AMIs**
 
 ```
-$ amictl aws list-all --account 123456789012 --region us-east-1
+$ amictl aws list-unused --account 123456789012 --region us-east-1
 ami-00123asb820d84d9a
 ami-01ee75aqwez39a298
 ami-02e6a65236aa8d0e7
