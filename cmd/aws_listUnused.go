@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/brunopadz/amictl/commons"
+	"github.com/brunopadz/amictl/pricing"
 	"github.com/brunopadz/amictl/providers"
 	"github.com/spf13/cobra"
 )
@@ -44,19 +45,27 @@ func runUnused(cmd *cobra.Command, args []string) error {
 	// Compare AMI list
 	l, u := providers.AwsListNotUsed(a, s)
 
-	fmt.Println(l)
-
 	n := commons.Compare(l, u)
 	r := strings.Join(n, "\n")
 
 	if cost == true {
-		fmt.Println(r)
-		fmt.Println(a)
+		var total float64
+		for _, i := range n {
+			for _, ami := range a.Images {
+				if aws.StringValue(ami.ImageId) == i {
+					s := aws.Int64Value(ami.BlockDeviceMappings[0].Ebs.VolumeSize)
+					p := pricing.Ami(s, region)
+					total += p
+					fmt.Println("AMI-ID:", i, "Size:", s, "GB", "Estimated cost monthly: U$", commons.Round(p))
+				}
+			}
+		}
+		rt := commons.Round(total)
+		fmt.Println("\nEstimated cost monthly: U$", rt, "for", len(n), "Unused AMIs")
 	} else {
 		fmt.Println(r)
+		fmt.Println("Total of", len(n), "not used AMIs")
 	}
-
-	fmt.Println("Total of", len(n), "not used AMIs")
 
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/brunopadz/amictl/commons"
 	"github.com/brunopadz/amictl/providers"
 
 	"github.com/brunopadz/amictl/pricing"
@@ -53,11 +54,12 @@ func runAll(cmd *cobra.Command, args []string) error {
 			s := aws.Int64Value(ami.BlockDeviceMappings[0].Ebs.VolumeSize)
 			i := aws.StringValue(ami.ImageId)
 			p := pricing.Ami(s, region)
-			fmt.Println("AMI-ID:", i, "Size:", s, "GB", "Estimated cost monthly: U$", p)
 
 			total += p
+			fmt.Println("AMI-ID:", i, "Size:", s, "GB", "Estimated cost monthly: U$", commons.Round(p))
 		}
-		fmt.Println("\nEstimated cost monthly: U$", total, "for", len(l), "AMIs")
+		rt := commons.Round(total)
+		fmt.Println("\nEstimated cost monthly: U$", rt, "for", len(l), "AMIs")
 	} else {
 		fmt.Println(r)
 		fmt.Println("Total of", len(l), "AMIs")

@@ -46,3 +46,14 @@ ami-01ee75aqwez39a298
 ami-02e6a65236aa8d0e7
 Total of 3 AMIs
 ```
+
+**Estimate costs**
+
+```
+amictl aws list-unused --account 123456789012 --region us-east-1 --cost
+AMI-ID: ami-044ec27279a83e963 Size: 20 GB Estimated cost monthly: U$ 0.46
+AMI-ID: ami-09665078cc0a18084 Size: 8 GB  Estimated cost monthly: U$ 0.18
+AMI-ID: ami-0c14b9433a78ac8f1 Size: 8 GB  Estimated cost monthly: U$ 0.18
+
+Estimated cost monthly: U$ 0.83 for 3 Unused AMI
+```
