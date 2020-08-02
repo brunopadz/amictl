@@ -44,10 +44,18 @@ func runUnused(cmd *cobra.Command, args []string) error {
 	// Compare AMI list
 	l, u := providers.AwsListNotUsed(a, s)
 
+	fmt.Println(l)
+
 	n := commons.Compare(l, u)
 	r := strings.Join(n, "\n")
 
-	fmt.Println(r)
+	if cost == true {
+		fmt.Println(r)
+		fmt.Println(a)
+	} else {
+		fmt.Println(r)
+	}
+
 	fmt.Println("Total of", len(n), "not used AMIs")
 
 	return nil

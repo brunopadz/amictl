@@ -9,6 +9,7 @@ import (
 var (
 	account string
 	region  string
+	cost    bool
 )
 
 var awsCmd = &cobra.Command{
@@ -28,6 +29,7 @@ func init() {
 
 	awsCmd.PersistentFlags().StringVarP(&account, "account", "a", "", "AWS account ID")
 	awsCmd.PersistentFlags().StringVarP(&region, "region", "r", "", "AWS region ID")
+	awsCmd.PersistentFlags().BoolVarP(&cost, "cost", "c", false, "Estimated Cost")
 
 	awsCmd.MarkFlagRequired("account")
 	awsCmd.MarkFlagRequired("region")
