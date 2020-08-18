@@ -1,4 +1,4 @@
-package providers
+package aws
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func AwsSession(r string) *ec2.EC2 {
+func Session(r string) *ec2.EC2 {
 
 	sess, err := session.NewSession(&aws.Config{Region: aws.String(r)})
 	if err != nil {
@@ -20,7 +20,7 @@ func AwsSession(r string) *ec2.EC2 {
 	return svc
 }
 
-func AwsListAll(a *ec2.DescribeImagesOutput, s *ec2.EC2) []string {
+func ListAll(a *ec2.DescribeImagesOutput, s *ec2.EC2) []string {
 
 	all := []string{}
 
@@ -32,7 +32,7 @@ func AwsListAll(a *ec2.DescribeImagesOutput, s *ec2.EC2) []string {
 	return all
 }
 
-func AwsListNotUsed(a *ec2.DescribeImagesOutput, s *ec2.EC2) ([]string, []string) {
+func ListNotUsed(a *ec2.DescribeImagesOutput, s *ec2.EC2) ([]string, []string) {
 
 	all := []string{}
 	used := []string{}
