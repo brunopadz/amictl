@@ -36,7 +36,7 @@ func ListNotUsed(output *ec2.DescribeImagesOutput, sess *ec2.EC2) ([]string, []s
 		amiFilter := &ec2.DescribeInstancesInput{
 			Filters: []*ec2.Filter{
 				{
-					Name:   aws.String("image-id"),
+					Name: aws.String("image-id"),
 					Values: []*string{
 						ami.ImageId,
 					},
