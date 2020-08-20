@@ -34,15 +34,18 @@ func runAll(cmd *cobra.Command, args []string) error {
 	}
 
 	// Establishes new authenticated session to AWS
-	s := aws2.Session(region)
+	sess, err := aws2.NewSession(region)
+	if err != nil {
+		return err
+	}
 
 	// Filter AMIs based on input filter
-	a, err := s.DescribeImages(f)
+	a, err := sess.DescribeImages(f)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	l := aws2.ListAll(a, s)
+	l := aws2.ListAll(a, sess)
 
 	r := strings.Join(l, "\n")
 

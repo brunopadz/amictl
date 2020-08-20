@@ -8,16 +8,17 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func Session(r string) *ec2.EC2 {
-
-	sess, err := session.NewSession(&aws.Config{Region: aws.String(r)})
-	if err != nil {
-		fmt.Println(err)
+func NewSession(r string) (*ec2.EC2, error) {
+	var config = &aws.Config{
+		Region: aws.String(r),
 	}
 
-	svc := ec2.New(sess)
+	sess, err := session.NewSession(config)
+	if err != nil {
+		return nil, err
+	}
 
-	return svc
+	return ec2.New(sess), nil
 }
 
 func ListAll(a *ec2.DescribeImagesOutput, s *ec2.EC2) []string {
