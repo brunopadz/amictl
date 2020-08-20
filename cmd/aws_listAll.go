@@ -45,7 +45,7 @@ func runAll(cmd *cobra.Command, args []string) error {
 		fmt.Println(err)
 	}
 
-	l := aws2.ListAll(a, sess)
+	l := aws2.ListAll(a)
 
 	r := strings.Join(l, "\n")
 

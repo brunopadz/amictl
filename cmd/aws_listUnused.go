@@ -45,7 +45,10 @@ func runUnused(cmd *cobra.Command, args []string) error {
 	}
 
 	// Compare AMI list
-	l, u := aws2.ListNotUsed(a, sess)
+	l, u, err := aws2.ListNotUsed(a, sess)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	n := commons.Compare(l, u)
 	r := strings.Join(n, "\n")
