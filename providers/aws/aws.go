@@ -21,15 +21,11 @@ func NewSession(r string) (*ec2.EC2, error) {
 	return ec2.New(sess), nil
 }
 
-func ListAll(a *ec2.DescribeImagesOutput, s *ec2.EC2) []string {
-
-	all := []string{}
-
-	for _, v := range a.Images {
-		inu := v.ImageId
-
-		all = append(all, aws.StringValue(inu))
+func ListAll(output *ec2.DescribeImagesOutput) (all []string) {
+	for _, v := range output.Images {
+		all = append(all, aws.StringValue(v.ImageId))
 	}
+
 	return all
 }
 
