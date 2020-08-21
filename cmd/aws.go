@@ -5,7 +5,6 @@ import (
 )
 
 var (
-	region  string
 	cost    bool
 )
 
@@ -25,7 +24,7 @@ func init() {
 	rootCmd.AddCommand(awsCmd)
 
 	awsCmd.PersistentFlags().StringP("account", "a", "", "AWS account ID")
-	awsCmd.PersistentFlags().StringVarP(&region, "region", "r", "", "AWS region ID")
+	awsCmd.PersistentFlags().StringP("region", "r", "", "AWS region ID")
 	awsCmd.PersistentFlags().BoolVarP(&cost, "cost", "c", false, "AWS ami estimated cost")
 
 	_ = awsCmd.MarkPersistentFlagRequired("account")

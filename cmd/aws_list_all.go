@@ -36,6 +36,11 @@ func runAll(cmd *cobra.Command, args []string) error {
 		},
 	}
 
+	region, err := cmd.Flags().GetString("region")
+	if err != nil {
+		return err
+	}
+
 	// Establishes new authenticated session to AWS
 	sess, err := aws2.NewSession(region)
 	if err != nil {
