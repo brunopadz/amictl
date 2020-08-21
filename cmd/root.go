@@ -6,8 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cfgFile string
-
 var rootCmd = &cobra.Command{
 	Use:   "amictl",
 	Short: "amictl is a CLI to control your AMIs and Images.",

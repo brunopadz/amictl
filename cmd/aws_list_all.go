@@ -24,6 +24,10 @@ var listAll = &cobra.Command{
 }
 
 func runAll(cmd *cobra.Command, args []string) error {
+	account, err := cmd.Flags().GetString("account")
+	if err != nil {
+		return err
+	}
 
 	// Creates a input filter to get AMIs
 	f := &ec2.DescribeImagesInput{
