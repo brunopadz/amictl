@@ -1,13 +1,12 @@
 package cmd
 
 import (
-	"fmt"
-	aws2 "github.com/brunopadz/amictl/providers/aws"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/brunopadz/amictl/commons"
+	aws2 "github.com/brunopadz/amictl/providers/aws"
 	"github.com/spf13/cobra"
 )
 
@@ -33,16 +32,22 @@ func runUnused(cmd *cobra.Command, args []string) error {
 	}
 
 	// Establishes new authenticated session to AWS
-	s := aws2.Session(region)
+	sess, err := aws2.NewSession(region)
+	if err != nil {
+		return err
+	}
 
 	// Filter AMIs based on input filter
-	a, err := s.DescribeImages(f)
+	a, err := sess.DescribeImages(f)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
 
 	// Compare AMI list
-	l, u := aws2.ListNotUsed(a, s)
+	l, u, err := aws2.ListNotUsed(a, sess)
+	if err != nil {
+		return err
+	}
 
 	n := commons.Compare(l, u)
 	r := strings.Join(n, "\n")
@@ -55,15 +60,15 @@ func runUnused(cmd *cobra.Command, args []string) error {
 					s := aws.Int64Value(ami.BlockDeviceMappings[0].Ebs.VolumeSize)
 					p := aws2.GetAmiPriceBySize(s, region)
 					total += p
-					fmt.Println("AMI-ID:", i, "Size:", s, "GB", "Estimated cost monthly: U$", commons.Round(p))
+					cmd.Println("AMI-ID:", i, "Size:", s, "GB", "Estimated cost monthly: U$", commons.Round(p))
 				}
 			}
 		}
 		rt := commons.Round(total)
-		fmt.Println("\nEstimated cost monthly: U$", rt, "for", len(n), "Unused AMIs")
+		cmd.Println("\nEstimated cost monthly: U$", rt, "for", len(n), "Unused AMIs")
 	} else {
-		fmt.Println(r)
-		fmt.Println("Total of", len(n), "not used AMIs")
+		cmd.Println(r)
+		cmd.Println("Total of", len(n), "not used AMIs")
 	}
 
 	return nil

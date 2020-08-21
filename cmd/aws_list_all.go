@@ -1,13 +1,12 @@
 package cmd
 
 import (
-	"fmt"
-	aws2 "github.com/brunopadz/amictl/providers/aws"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/brunopadz/amictl/commons"
+	aws2 "github.com/brunopadz/amictl/providers/aws"
 	"github.com/spf13/cobra"
 )
 
@@ -34,16 +33,18 @@ func runAll(cmd *cobra.Command, args []string) error {
 	}
 
 	// Establishes new authenticated session to AWS
-	s := aws2.Session(region)
-
-	// Filter AMIs based on input filter
-	a, err := s.DescribeImages(f)
+	sess, err := aws2.NewSession(region)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
 
-	l := aws2.ListAll(a, s)
+	// Filter AMIs based on input filter
+	a, err := sess.DescribeImages(f)
+	if err != nil {
+		return err
+	}
 
+	l := aws2.ListAll(a)
 	r := strings.Join(l, "\n")
 
 	if cost == true {
@@ -54,13 +55,13 @@ func runAll(cmd *cobra.Command, args []string) error {
 			p := aws2.GetAmiPriceBySize(s, region)
 
 			total += p
-			fmt.Println("AMI-ID:", i, "Size:", s, "GB", "Estimated cost monthly: U$", commons.Round(p))
+			cmd.Println("AMI-ID:", i, "Size:", s, "GB", "Estimated cost monthly: U$", commons.Round(p))
 		}
 		rt := commons.Round(total)
-		fmt.Println("\nEstimated cost monthly: U$", rt, "for", len(l), "AMIs")
+		cmd.Println("\nEstimated cost monthly: U$", rt, "for", len(l), "AMIs")
 	} else {
-		fmt.Println(r)
-		fmt.Println("Total of", len(l), "AMIs")
+		cmd.Println(r)
+		cmd.Println("Total of", len(l), "AMIs")
 	}
 
 	return nil

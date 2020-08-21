@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +17,7 @@ var awsCmd = &cobra.Command{
 	Example: `  amictl aws list-all --account 123456789012 --region us-east-1
   amictl aws list-unused --account 123456789012 --region us-east-1`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(cmd.Long)
+		cmd.Println(cmd.Long)
 	},
 	TraverseChildren: true,
 }
@@ -31,6 +29,6 @@ func init() {
 	awsCmd.PersistentFlags().StringVarP(&region, "region", "r", "", "AWS region ID")
 	awsCmd.PersistentFlags().BoolVarP(&cost, "cost", "c", false, "Estimated Cost")
 
-	awsCmd.MarkFlagRequired("account")
-	awsCmd.MarkFlagRequired("region")
+	_ = awsCmd.MarkPersistentFlagRequired("account")
+	_ = awsCmd.MarkPersistentFlagRequired("region")
 }
