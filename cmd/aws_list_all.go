@@ -56,6 +56,11 @@ func runAll(cmd *cobra.Command, args []string) error {
 	l := aws2.ListAll(a)
 	r := strings.Join(l, "\n")
 
+	cost, err := cmd.Flags().GetBool("cost")
+	if err != nil {
+		return err
+	}
+
 	if cost == true {
 		var total float64
 		for _, ami := range a.Images {

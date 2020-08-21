@@ -62,6 +62,11 @@ func runUnused(cmd *cobra.Command, args []string) error {
 	n := commons.Compare(l, u)
 	r := strings.Join(n, "\n")
 
+	cost, err := cmd.Flags().GetBool("cost")
+	if err != nil {
+		return err
+	}
+
 	if cost == true {
 		var total float64
 		for _, i := range n {
