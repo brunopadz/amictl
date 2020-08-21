@@ -24,11 +24,21 @@ var listUnused = &cobra.Command{
 }
 
 func runUnused(cmd *cobra.Command, args []string) error {
+	account, err := cmd.Flags().GetString("account")
+	if err != nil {
+		return err
+	}
+
 	// Creates a input filter to get AMIs
 	f := &ec2.DescribeImagesInput{
 		Owners: []*string{
-			aws.String(account),
+			&account,
 		},
+	}
+
+	region, err := cmd.Flags().GetString("region")
+	if err != nil {
+		return err
 	}
 
 	// Establishes new authenticated session to AWS
@@ -51,6 +61,11 @@ func runUnused(cmd *cobra.Command, args []string) error {
 
 	n := commons.Compare(l, u)
 	r := strings.Join(n, "\n")
+
+	cost, err := cmd.Flags().GetBool("cost")
+	if err != nil {
+		return err
+	}
 
 	if cost == true {
 		var total float64

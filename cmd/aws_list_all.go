@@ -24,12 +24,21 @@ var listAll = &cobra.Command{
 }
 
 func runAll(cmd *cobra.Command, args []string) error {
+	account, err := cmd.Flags().GetString("account")
+	if err != nil {
+		return err
+	}
 
 	// Creates a input filter to get AMIs
 	f := &ec2.DescribeImagesInput{
 		Owners: []*string{
 			aws.String(account),
 		},
+	}
+
+	region, err := cmd.Flags().GetString("region")
+	if err != nil {
+		return err
 	}
 
 	// Establishes new authenticated session to AWS
@@ -46,6 +55,11 @@ func runAll(cmd *cobra.Command, args []string) error {
 
 	l := aws2.ListAll(a)
 	r := strings.Join(l, "\n")
+
+	cost, err := cmd.Flags().GetBool("cost")
+	if err != nil {
+		return err
+	}
 
 	if cost == true {
 		var total float64
