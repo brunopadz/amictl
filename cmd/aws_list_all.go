@@ -1,11 +1,8 @@
 package cmd
 
 import (
-	"strings"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/brunopadz/amictl/commons"
 	aws2 "github.com/brunopadz/amictl/providers/aws"
 	"github.com/spf13/cobra"
 )
@@ -23,14 +20,14 @@ var listAll = &cobra.Command{
 	RunE:    runAll,
 }
 
-func runAll(cmd *cobra.Command, args []string) error {
+func runAll(cmd *cobra.Command, _ []string) error {
 	account, err := cmd.Flags().GetString("account")
 	if err != nil {
 		return err
 	}
 
-	// Creates a input filter to get AMIs
-	f := &ec2.DescribeImagesInput{
+	// Creates describeImagesOutput input filter to get AMIs
+	criteria := &ec2.DescribeImagesInput{
 		Owners: []*string{
 			aws.String(account),
 		},
@@ -48,13 +45,12 @@ func runAll(cmd *cobra.Command, args []string) error {
 	}
 
 	// Filter AMIs based on input filter
-	a, err := sess.DescribeImages(f)
+	describeImagesOutput, err := sess.DescribeImages(criteria)
 	if err != nil {
 		return err
 	}
 
-	l := aws2.ListAll(a)
-	r := strings.Join(l, "\n")
+	imageList := aws2.ListAll(describeImagesOutput)
 
 	cost, err := cmd.Flags().GetBool("cost")
 	if err != nil {
@@ -62,20 +58,21 @@ func runAll(cmd *cobra.Command, args []string) error {
 	}
 
 	if cost == true {
-		var total float64
-		for _, ami := range a.Images {
-			s := aws.Int64Value(ami.BlockDeviceMappings[0].Ebs.VolumeSize)
-			i := aws.StringValue(ami.ImageId)
-			p := aws2.GetAmiPriceBySize(s, region)
-
-			total += p
-			cmd.Println("AMI-ID:", i, "Size:", s, "GB", "Estimated cost monthly: U$", commons.Round(p))
+		var partial float64
+		for _, ami := range imageList {
+			p := aws2.GetAmiPriceBySize(ami.Size, region)
+			cmd.Println("ami-id:", ami.ID, "size:", ami.Size, "GB", "Estimated cost monthly: U$", aws2.Round(p))
+			partial += p
 		}
-		rt := commons.Round(total)
-		cmd.Println("\nEstimated cost monthly: U$", rt, "for", len(l), "AMIs")
+
+		total := aws2.Round(partial)
+		cmd.Println("\nEstimated cost monthly: U$", total, "for", len(imageList), "AMIs")
 	} else {
-		cmd.Println(r)
-		cmd.Println("Total of", len(l), "AMIs")
+		for _, ami := range imageList {
+			cmd.Println("ami-id:", ami.ID)
+		}
+
+		cmd.Println("Total of", len(imageList), "AMIs")
 	}
 
 	return nil

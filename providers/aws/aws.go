@@ -6,6 +6,16 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
+type ami struct {
+	ID string
+	Size int64
+}
+
+type Summary struct {
+	TotalSize int64
+	Images []ami
+}
+
 func NewSession(r string) (*ec2.EC2, error) {
 	var config = &aws.Config{
 		Region: aws.String(r),
@@ -19,42 +29,48 @@ func NewSession(r string) (*ec2.EC2, error) {
 	return ec2.New(sess), nil
 }
 
-func ListAll(output *ec2.DescribeImagesOutput) (all []string) {
-	for _, v := range output.Images {
-		all = append(all, aws.StringValue(v.ImageId))
+func ListAll(output *ec2.DescribeImagesOutput) []ami {
+	var imageList []ami
+
+	for _, image := range output.Images {
+		imageList = append(imageList, ami{
+			ID:   aws.StringValue(image.ImageId),
+			Size: aws.Int64Value(image.BlockDeviceMappings[0].Ebs.VolumeSize),
+		})
 	}
 
-	return all
+	return imageList
 }
 
-func ListNotUsed(output *ec2.DescribeImagesOutput, sess *ec2.EC2) ([]string, []string, error) {
-	var all, used []string
+func ListNotUsed(sess *ec2.EC2, imageList []ami) ([]ami, error) {
+	var amiInUsedList []ami
 
-	for _, ami := range output.Images {
-		all = append(all, aws.StringValue(ami.ImageId))
-
-		amiFilter := &ec2.DescribeInstancesInput{
+	for _, image := range imageList {
+		criteria := &ec2.DescribeInstancesInput{
 			Filters: []*ec2.Filter{
 				{
 					Name: aws.String("image-id"),
 					Values: []*string{
-						ami.ImageId,
+						&image.ID,
 					},
 				},
 			},
 		}
 
-		output, err := sess.DescribeInstances(amiFilter)
+		output, err := sess.DescribeInstances(criteria)
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 
 		for _, res := range output.Reservations {
 			for range res.Instances {
-				used = append(used, aws.StringValue(ami.ImageId))
+				amiInUsedList = append(amiInUsedList,  ami{
+					ID:   image.ID,
+					Size: image.Size,
+				})
 			}
 		}
 	}
 
-	return all, used, nil
+	return amiInUsedList, nil
 }
