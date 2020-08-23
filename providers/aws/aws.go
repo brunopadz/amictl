@@ -6,16 +6,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-type ami struct {
-	ID string
-	Size int64
-}
-
-type Summary struct {
-	TotalSize int64
-	Images []ami
-}
-
 func NewSession(r string) (*ec2.EC2, error) {
 	var config = &aws.Config{
 		Region: aws.String(r),
@@ -29,10 +19,10 @@ func NewSession(r string) (*ec2.EC2, error) {
 	return ec2.New(sess), nil
 }
 
-func FilterAmiInUse(sess *ec2.EC2, describeImagesOutput *ec2.DescribeImagesOutput) error {
+func FilterAmiInUse(sess *ec2.EC2, imagesOutput *ec2.DescribeImagesOutput) error {
 	var IDInUseList []*string
 
-	for _, image := range describeImagesOutput.Images {
+	for _, image := range imagesOutput.Images {
 		IDInUseList = append(IDInUseList, image.ImageId)
 	}
 
@@ -45,16 +35,16 @@ func FilterAmiInUse(sess *ec2.EC2, describeImagesOutput *ec2.DescribeImagesOutpu
 		},
 	}
 
-	describeInstanceOutput, err := sess.DescribeInstances(criteria)
+	instancesOutput, err := sess.DescribeInstances(criteria)
 	if err != nil {
 		return err
 	}
 
 	var images []*ec2.Image
-	for _, image := range describeImagesOutput.Images {
+	for _, image := range imagesOutput.Images {
 		var count = 0
 
-		for _, res := range describeInstanceOutput.Reservations {
+		for _, res := range instancesOutput.Reservations {
 			for _, instance := range res.Instances {
 				if aws.StringValue(instance.ImageId) == aws.StringValue(image.ImageId) {
 					count++
@@ -67,7 +57,7 @@ func FilterAmiInUse(sess *ec2.EC2, describeImagesOutput *ec2.DescribeImagesOutpu
 		}
 	}
 
-	describeImagesOutput.SetImages(images)
+	imagesOutput.SetImages(images)
 
 	return nil
 }

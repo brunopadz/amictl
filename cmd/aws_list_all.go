@@ -21,14 +21,16 @@ var listAll = &cobra.Command{
 }
 
 func runAll(cmd *cobra.Command, _ []string) error {
-	cost, err := cmd.Flags().GetBool("cost")
+	account, err := cmd.Flags().GetString("account")
 	if err != nil {
 		return err
 	}
 
-	account, err := cmd.Flags().GetString("account")
-	if err != nil {
-		return err
+	// Creates DescribeImagesInput to get AMIs
+	var criteria = &ec2.DescribeImagesInput{
+		Owners: []*string{
+			aws.String(account),
+		},
 	}
 
 	region, err := cmd.Flags().GetString("region")
@@ -42,38 +44,16 @@ func runAll(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	// Creates describeImagesOutput input filter to get AMIs
-	var criteria = &ec2.DescribeImagesInput{
-		Owners: []*string{
-			aws.String(account),
-		},
-	}
-
-	// Filter AMIs based on input filter
-	describeImagesOutput, err := sess.DescribeImages(criteria)
+	// Filter AMIs based on criteria filter
+	output, err := sess.DescribeImages(criteria)
 	if err != nil {
 		return err
 	}
 
-	var volume int64
-
-	for _, ami := range describeImagesOutput.Images {
-		cmd.Printf("ami-id: %s ", aws.StringValue(ami.ImageId))
-		if cost {
-			var volumeSize 	= aws.Int64Value(ami.BlockDeviceMappings[0].Ebs.VolumeSize)
-			volume += volumeSize
-
-			cmd.Printf("size: %d GB ", volumeSize)
-			cmd.Printf("monthly cost: U$ %g", provider.GetAmiPriceBySize(volumeSize, region))
-		}
-		cmd.Println()
+	err = provider.Render(cmd, region, output)
+	if err != nil {
+		return err
 	}
-
-	cmd.Printf("Total of AMIs: %d \n", len(describeImagesOutput.Images))
-	if cost {
-		cmd.Printf("Estimated cost monthly: U$ %g", provider.GetAmiPriceBySize(volume, region))
-	}
-
 
 	return nil
 }
