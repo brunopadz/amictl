@@ -29,48 +29,45 @@ func NewSession(r string) (*ec2.EC2, error) {
 	return ec2.New(sess), nil
 }
 
-func ListAll(output *ec2.DescribeImagesOutput) []ami {
-	var imageList []ami
+func FilterAmiInUse(sess *ec2.EC2, describeImagesOutput *ec2.DescribeImagesOutput) error {
+	var IDInUseList []*string
 
-	for _, image := range output.Images {
-		imageList = append(imageList, ami{
-			ID:   aws.StringValue(image.ImageId),
-			Size: aws.Int64Value(image.BlockDeviceMappings[0].Ebs.VolumeSize),
-		})
+	for _, image := range describeImagesOutput.Images {
+		IDInUseList = append(IDInUseList, image.ImageId)
 	}
 
-	return imageList
-}
-
-func ListNotUsed(sess *ec2.EC2, imageList []ami) ([]ami, error) {
-	var amiInUsedList []ami
-
-	for _, image := range imageList {
-		criteria := &ec2.DescribeInstancesInput{
-			Filters: []*ec2.Filter{
-				{
-					Name: aws.String("image-id"),
-					Values: []*string{
-						&image.ID,
-					},
-				},
+	var criteria = &ec2.DescribeInstancesInput{
+		Filters: []*ec2.Filter{
+			{
+				Name:   aws.String("image-id"),
+				Values: IDInUseList,
 			},
-		}
+		},
+	}
 
-		output, err := sess.DescribeInstances(criteria)
-		if err != nil {
-			return nil, err
-		}
+	describeInstanceOutput, err := sess.DescribeInstances(criteria)
+	if err != nil {
+		return err
+	}
 
-		for _, res := range output.Reservations {
-			for range res.Instances {
-				amiInUsedList = append(amiInUsedList,  ami{
-					ID:   image.ID,
-					Size: image.Size,
-				})
+	var images []*ec2.Image
+	for _, image := range describeImagesOutput.Images {
+		var count = 0
+
+		for _, res := range describeInstanceOutput.Reservations {
+			for _, instance := range res.Instances {
+				if aws.StringValue(instance.ImageId) == aws.StringValue(image.ImageId) {
+					count++
+				}
 			}
 		}
+
+		if count == 0 {
+			images = append(images, image)
+		}
 	}
 
-	return amiInUsedList, nil
+	describeImagesOutput.SetImages(images)
+
+	return nil
 }

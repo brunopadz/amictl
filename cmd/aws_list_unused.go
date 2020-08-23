@@ -1,8 +1,9 @@
 package cmd
 
 import (
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	aws2 "github.com/brunopadz/amictl/providers/aws"
+	provider "github.com/brunopadz/amictl/providers/aws"
 	"github.com/spf13/cobra"
 )
 
@@ -20,16 +21,14 @@ var listUnused = &cobra.Command{
 }
 
 func runUnused(cmd *cobra.Command, _ []string) error {
-	account, err := cmd.Flags().GetString("account")
+	cost, err := cmd.Flags().GetBool("cost")
 	if err != nil {
 		return err
 	}
 
-	// Creates describeImagesOutput input filter to get AMIs
-	criteria := &ec2.DescribeImagesInput{
-		Owners: []*string{
-			&account,
-		},
+	account, err := cmd.Flags().GetString("account")
+	if err != nil {
+		return err
 	}
 
 	region, err := cmd.Flags().GetString("region")
@@ -38,9 +37,16 @@ func runUnused(cmd *cobra.Command, _ []string) error {
 	}
 
 	// Establishes new authenticated session to AWS
-	sess, err := aws2.NewSession(region)
+	sess, err := provider.NewSession(region)
 	if err != nil {
 		return err
+	}
+
+	// Creates describeImagesOutput input filter to get AMIs
+	var criteria = &ec2.DescribeImagesInput{
+		Owners: []*string{
+			&account,
+		},
 	}
 
 	// Filter AMIs based on input filter
@@ -49,41 +55,27 @@ func runUnused(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	imageList := aws2.ListAll(describeImagesOutput)
-
-	// compare AMI list
-	imageInUseList, err := aws2.ListNotUsed(sess, imageList)
-	if err != nil {
+	// Filter AMI with reservations
+	if err := provider.FilterAmiInUse(sess, describeImagesOutput); err != nil {
 		return err
 	}
 
-	imageNotInUseList := aws2.Compare(imageList, imageInUseList)
+	var volume int64
+	for _, ami := range describeImagesOutput.Images {
+		cmd.Printf("ami-id: %s \b", aws.StringValue(ami.ImageId))
+		if cost {
+			var volumeSize 	= aws.Int64Value(ami.BlockDeviceMappings[0].Ebs.VolumeSize)
+			volume += volumeSize
 
-	cost, err := cmd.Flags().GetBool("cost")
-	if err != nil {
-		return err
+			cmd.Printf("size: %d GB \b", volumeSize)
+			cmd.Printf("monthly cost: U$ %g", provider.GetAmiPriceBySize(volumeSize, region))
+		}
+		cmd.Println()
 	}
 
-	if cost == true {
-		var total float64
-		for _, imageNotInUse := range imageNotInUseList {
-			for _, imageInUse := range imageInUseList {
-				if imageNotInUse.ID == imageInUse.ID {
-					p := aws2.GetAmiPriceBySize(imageNotInUse.Size, region)
-					total += p
-					cmd.Println("ami-id:", imageNotInUse.ID, "size:", imageNotInUse.Size, "GB", "Estimated cost monthly: U$", aws2.Round(p))
-				}
-			}
-		}
-
-		rt := aws2.Round(total)
-		cmd.Println("\nEstimated cost monthly: U$", rt, "for", len(imageNotInUseList), "Unused AMIs")
-	} else {
-		for _, image := range imageNotInUseList {
-			cmd.Println("ami-id:", image.ID)
-		}
-
-		cmd.Println("Total of", len(imageNotInUseList), "not used AMIs")
+	cmd.Printf("Total of AMIs: %d \n", len(describeImagesOutput.Images))
+	if cost {
+		cmd.Printf("Estimated cost monthly: U$ %g", provider.GetAmiPriceBySize(volume, region))
 	}
 
 	return nil

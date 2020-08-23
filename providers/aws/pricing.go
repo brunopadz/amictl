@@ -1,5 +1,7 @@
 package aws
 
+import "math"
+
 const (
 	usEast1      = 0.023 // Virginia
 	usEast2      = 0.023 // Ohio
@@ -13,16 +15,20 @@ const (
 func GetAmiPriceBySize(sizeInGb int64, region string) float64 {
 	switch region {
 	case "us-east-1":
-		return usEast1 * float64(sizeInGb)
+		return round(usEast1 * float64(sizeInGb))
 	case "us-east-2":
-		return usEast2 * float64(sizeInGb)
+		return round(usEast2 * float64(sizeInGb))
 	case "us-west-1":
-		return usWest1 * float64(sizeInGb)
+		return round(usWest1 * float64(sizeInGb))
 	case "us-west-2":
-		return usWest2 * float64(sizeInGb)
+		return round(usWest2 * float64(sizeInGb))
 	case "sa-east-1":
-		return saEast1 * float64(sizeInGb)
+		return round(saEast1 * float64(sizeInGb))
 	default:
-		return defaultValue * float64(sizeInGb)
+		return round(defaultValue * float64(sizeInGb))
 	}
+}
+
+func round(x float64) float64 {
+	return math.Round(x*100) / 100
 }
