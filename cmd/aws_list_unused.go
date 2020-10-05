@@ -1,12 +1,8 @@
 package cmd
 
 import (
-	"strings"
-
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/brunopadz/amictl/commons"
-	aws2 "github.com/brunopadz/amictl/providers/aws"
+	provider "github.com/brunopadz/amictl/providers/aws"
 	"github.com/spf13/cobra"
 )
 
@@ -23,14 +19,14 @@ var listUnused = &cobra.Command{
 	RunE:    runUnused,
 }
 
-func runUnused(cmd *cobra.Command, args []string) error {
+func runUnused(cmd *cobra.Command, _ []string) error {
 	account, err := cmd.Flags().GetString("account")
 	if err != nil {
 		return err
 	}
 
-	// Creates a input filter to get AMIs
-	f := &ec2.DescribeImagesInput{
+	// Creates DescribeImagesInput to get AMIs
+	var criteria = &ec2.DescribeImagesInput{
 		Owners: []*string{
 			&account,
 		},
@@ -42,49 +38,28 @@ func runUnused(cmd *cobra.Command, args []string) error {
 	}
 
 	// Establishes new authenticated session to AWS
-	sess, err := aws2.NewSession(region)
+	sess, err := provider.NewSession(region)
 	if err != nil {
 		return err
 	}
 
-	// Filter AMIs based on input filter
-	a, err := sess.DescribeImages(f)
+	// Filter AMIs based on criteria filter
+	output, err := sess.DescribeImages(criteria)
 	if err != nil {
 		return err
 	}
 
-	// Compare AMI list
-	l, u, err := aws2.ListNotUsed(a, sess)
+	// Filter AMI with reservations
+	err = provider.FilterAmiInUse(sess, output)
 	if err != nil {
 		return err
 	}
 
-	n := commons.Compare(l, u)
-	r := strings.Join(n, "\n")
-
-	cost, err := cmd.Flags().GetBool("cost")
+	err = provider.Render(cmd, region, output)
 	if err != nil {
 		return err
-	}
-
-	if cost == true {
-		var total float64
-		for _, i := range n {
-			for _, ami := range a.Images {
-				if aws.StringValue(ami.ImageId) == i {
-					s := aws.Int64Value(ami.BlockDeviceMappings[0].Ebs.VolumeSize)
-					p := aws2.GetAmiPriceBySize(s, region)
-					total += p
-					cmd.Println("AMI-ID:", i, "Size:", s, "GB", "Estimated cost monthly: U$", commons.Round(p))
-				}
-			}
-		}
-		rt := commons.Round(total)
-		cmd.Println("\nEstimated cost monthly: U$", rt, "for", len(n), "Unused AMIs")
-	} else {
-		cmd.Println(r)
-		cmd.Println("Total of", len(n), "not used AMIs")
 	}
 
 	return nil
 }
+
