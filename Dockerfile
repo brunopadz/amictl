@@ -4,12 +4,10 @@ FROM golang:1.14 AS build-env
 WORKDIR /go/src/app/
 
 #copy to workdir path
-COPY main.go .
-
-ENV CGO_ENABLED=0
+COPY . .
 
 #build the go app
-RUN GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o app .
+RUN go build
 
 # final stage
 FROM alpine
