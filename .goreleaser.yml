@@ -1,0 +1,14 @@
+before:
+  hooks:
+    - go mod download
+builds:
+  - binary: amictl
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+archives:
+  - format: zip
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"

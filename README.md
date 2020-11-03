@@ -18,7 +18,7 @@ More docs coming soon.
 
 ## How to use
 
-- Download the binay from [releases page](https://github.com/brunopadz/amictl/releases) or 
+- Download the binary from [releases page](https://github.com/brunopadz/amictl/releases) or 
 - Download using go get:
   
   `go get github.com/brunopadz/amictl`
