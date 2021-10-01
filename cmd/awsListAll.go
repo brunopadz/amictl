@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 
@@ -35,24 +34,31 @@ func runAll(cmd *cobra.Command, _ []string) error {
 		fmt.Println(err)
 	}
 
-	sess, err := config.LoadDefaultConfig(context.TODO(),
-		config.WithRegion(viper.GetString("aws.region")))
+	r := viper.GetStringSlice("aws.regions")
 
-	client := ec2.NewFromConfig(sess)
+	for _, v := range r {
+		sess, err := config.LoadDefaultConfig(context.TODO(),
+			config.WithRegion(v))
 
-	input := &ec2.DescribeImagesInput{
-		Owners: []string{
-			viper.GetString("aws.account"),
-		},
-	}
+		client := ec2.NewFromConfig(sess)
 
-	output, err := client.DescribeImages(context.TODO(), input)
-	if err != nil {
-		fmt.Println(err)
-	}
+		input := &ec2.DescribeImagesInput{
+			Owners: []string{
+				viper.GetString("aws.account"),
+			},
+		}
 
-	for _, v := range output.Images {
-		fmt.Println(aws.ToString(v.ImageId))
+		output, err := client.DescribeImages(context.TODO(), input)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Println("Listing AMIs in", v)
+
+		for _, i := range output.Images {
+			fmt.Println(aws.ToString(i.ImageId))
+		}
+		fmt.Println("Total of", len(output.Images), "AMIs in", v)
 	}
 
 	return nil

@@ -6,5 +6,5 @@ type Config struct {
 
 type AwsConfig struct {
 	Account string
-	Region  string
+	Regions []string
 }
