@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	cfg "github.com/brunopadz/amictl/config"
 	aaws "github.com/brunopadz/amictl/pkg/providers/aws"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -36,6 +37,10 @@ func runAll(cmd *cobra.Command, _ []string) error {
 
 	r := viper.GetStringSlice("aws.regions")
 
+	td := pterm.TableData{
+		{"AMI ID", "REGION"},
+	}
+
 	for _, v := range r {
 		s, err := aaws.New(v)
 		if err != nil {
@@ -56,10 +61,14 @@ func runAll(cmd *cobra.Command, _ []string) error {
 		}
 
 		for _, i := range output.Images {
-			fmt.Println(aws.ToString(i.ImageId))
+			td = append(td, []string{aws.ToString(i.ImageId), v})
 		}
 
-		fmt.Println("Total of", len(output.Images), "AMIs in", v)
+	}
+
+	err = pterm.DefaultTable.WithHasHeader().WithData(td).Render()
+	if err != nil {
+		log.Fatalln("Couldn't render the results.")
 	}
 
 	return nil
