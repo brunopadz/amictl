@@ -5,15 +5,13 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/pterm/pterm"
-
-	"github.com/brunopadz/amictl/pkg/commons"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	cfg "github.com/brunopadz/amictl/config"
+	"github.com/brunopadz/amictl/pkg/commons"
 	aaws "github.com/brunopadz/amictl/pkg/providers/aws"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
