@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
+
+	"github.com/pterm/pterm"
 
 	"github.com/brunopadz/amictl/pkg/commons"
 
@@ -39,6 +40,12 @@ func runUnused(cmd *cobra.Command, _ []string) error {
 	}
 
 	r := viper.GetStringSlice("aws.regions")
+
+	d := pterm.TableData{
+		{"AMI ID", "REGION"},
+	}
+
+	var x []string
 
 	for _, v := range r {
 
@@ -78,7 +85,7 @@ func runUnused(cmd *cobra.Command, _ []string) error {
 
 		o, err := client.DescribeInstances(context.TODO(), criteria)
 		if err != nil {
-			log.Fatalln("Deu ruim")
+			log.Fatalln("Couldn't load instances data.")
 		}
 
 		for _, a := range o.Reservations {
@@ -87,11 +94,19 @@ func runUnused(cmd *cobra.Command, _ []string) error {
 			}
 		}
 
-		x := commons.Compare(AllImages, UsedImages)
-		y := strings.Join(x, "\n")
-		fmt.Println(y)
-		fmt.Println("Total of", len(x), "not used AMIs in", v)
+		x = commons.Compare(AllImages, UsedImages)
+
+		for _, id := range x {
+			d = append(d, []string{id, v})
+		}
+
 	}
+
+	l := len(d) - 1
+
+	err = pterm.DefaultTable.WithHasHeader().WithData(d).Render()
+
+	fmt.Println(l, "AMIs are not being utilized.")
 
 	return nil
 }
