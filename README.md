@@ -6,17 +6,14 @@
 
 - [How to use](docs/how_to_use.md)
 - [Download it!](https://github.com/brunopadz/amictl/releases/latest)
-- Feel free to [contribute](CONTRIBUTING.md)
+- Feel free to [contribute](CONTRIBUTING.md). Keep in mind that the `main` branch does not reflect the latest release. 
 - AWS is the only cloud provider supported to this date
 
 ## What is amictl?
 
-amictl is a super simple cli app to control your AMIs and Image IDs.
+amictl is a super simple cli app to control your AMIs and Image IDs. It currently supports AWS to list used and unused 
+AMIs.
 
-## And what does it do?
-
-So far, it shows how many AMIs/Image IDs you're not using and how much you could be saving.
-
-## Disclaimer
-
-- There are a ton of features that still need to be implemented. Just check the [contributing guide](CONTRIBUTING.md) and the open [issues](https://github.com/brunopadz/amictl/issues).
+There are a lot of features that still need to be implemented. Just check the
+[contributing guide](CONTRIBUTING.md) and the open a new [issue](https://github.com/brunopadz/amictl/issues) to start a
+discussion.
