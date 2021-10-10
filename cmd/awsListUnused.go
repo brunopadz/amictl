@@ -104,7 +104,13 @@ func runUnused(cmd *cobra.Command, _ []string) error {
 
 	err = pterm.DefaultTable.WithHasHeader().WithData(d).Render()
 
-	fmt.Println(l, "AMIs are not being utilized.")
-
+	if (l <= 20){
+		pterm.Println(pterm.Green(fmt.Sprintf("%d AMIs are not being utilized.", l)))
+	} else if (l > 20) && (l < 50) {
+		pterm.Println(pterm.Yellow(fmt.Sprintf("%d AMIs are not being utilized.", l)))
+	} else if ( l >= 50) { 
+		pterm.Println(pterm.Red(fmt.Sprintf("%d AMIs are not being utilized.", l)))
+	}
+		
 	return nil
 }
