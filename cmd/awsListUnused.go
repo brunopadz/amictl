@@ -9,8 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	cfg "github.com/brunopadz/amictl/config"
-	"github.com/brunopadz/amictl/pkg/commons"
 	aaws "github.com/brunopadz/amictl/pkg/providers/aws"
+	"github.com/brunopadz/amictl/pkg/utils"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -92,7 +92,7 @@ func runUnused(cmd *cobra.Command, _ []string) error {
 			}
 		}
 
-		x = commons.Compare(AllImages, UsedImages)
+		x = utils.Compare(AllImages, UsedImages)
 
 		for _, id := range x {
 			d = append(d, []string{id, v})
@@ -104,13 +104,13 @@ func runUnused(cmd *cobra.Command, _ []string) error {
 
 	err = pterm.DefaultTable.WithHasHeader().WithData(d).Render()
 
-	if (l <= 20){
+	if l <= 20 {
 		pterm.Println(pterm.Green(fmt.Sprintf("%d AMIs are not being utilized.", l)))
 	} else if (l > 20) && (l < 50) {
 		pterm.Println(pterm.Yellow(fmt.Sprintf("%d AMIs are not being utilized.", l)))
-	} else if ( l >= 50) { 
+	} else if l >= 50 {
 		pterm.Println(pterm.Red(fmt.Sprintf("%d AMIs are not being utilized.", l)))
 	}
-		
+
 	return nil
 }
