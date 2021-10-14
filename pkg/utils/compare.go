@@ -1,4 +1,4 @@
-package commons
+package utils
 
 func Compare(a, b []string) []string {
 	for i := len(a) - 1; i >= 0; i-- {
