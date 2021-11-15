@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
@@ -21,9 +20,9 @@ func init() {
 
 var inspect = &cobra.Command{
 	Use:     "inspect",
-	Short:   "Inspect AMI",
-	Long:    `Inspect command shows additional info about AMIs`,
-	Example: `  amictl aws inspect --region 123123123123 --ami ami-0x00000000f`,
+	Short:   "Shows detailed AMI info.",
+	Long:    `Inspect command shows AMIs such as tags, arch, image type and ebs info.`,
+	Example: `  amictl aws inspect --region 111222333444 --ami ami-0x00000000f`,
 	RunE:    runInspect,
 }
 
@@ -43,7 +42,7 @@ func runInspect(cmd *cobra.Command, _ []string) error {
 
 	s, err := aaws.New(region)
 	if err != nil {
-		log.Fatalln("Couldn't create a session to AWS.")
+		fmt.Println("Couldn't create a session to AWS. Please check your credentials.")
 	}
 
 	a := ec2.NewFromConfig(s)
@@ -59,7 +58,7 @@ func runInspect(cmd *cobra.Command, _ []string) error {
 
 	o, err := a.DescribeImages(context.TODO(), i)
 	if err != nil {
-		log.Fatalln("Couldn't get AMI data.")
+		fmt.Println("Couldn't describe AMIs.")
 	}
 
 	for _, v := range o.Images {

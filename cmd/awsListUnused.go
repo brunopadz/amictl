@@ -22,8 +22,8 @@ func init() {
 
 var listUnused = &cobra.Command{
 	Use:     "list-unused",
-	Short:   "List not used AMIs",
-	Long:    `List all unused AMIs for multiple regions.`,
+	Short:   "List not used AMIs.",
+	Long:    `List all unused AMIs for every region specified in the config file.`,
 	Example: `  amictl aws list-unused`,
 	RunE:    runUnused,
 }
@@ -52,7 +52,7 @@ func runUnused(cmd *cobra.Command, _ []string) error {
 
 		s, err := aaws.New(v)
 		if err != nil {
-			log.Fatalln("Couldn't create a session to AWS.")
+			log.Fatalln("Couldn't create a session to AWS. Please check your credentials.")
 		}
 
 		client := ec2.NewFromConfig(s)
@@ -83,7 +83,7 @@ func runUnused(cmd *cobra.Command, _ []string) error {
 
 		o, err := client.DescribeInstances(context.TODO(), criteria)
 		if err != nil {
-			log.Fatalln("Couldn't load instances data.")
+			log.Fatalln("Couldn't get instances data to check which AMIs are being used.")
 		}
 
 		for _, a := range o.Reservations {

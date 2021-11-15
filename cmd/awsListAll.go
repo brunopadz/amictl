@@ -20,8 +20,8 @@ func init() {
 
 var listAll = &cobra.Command{
 	Use:     "list-all",
-	Short:   "List all AMIs",
-	Long:    `List all AMIs for multiple regions.`,
+	Short:   "List all AMIs.",
+	Long:    `List all AMIs for every region specified in config file.`,
 	Example: `  amictl aws list-all`,
 	RunE:    runAll,
 }
@@ -44,7 +44,7 @@ func runAll(cmd *cobra.Command, _ []string) error {
 	for _, v := range r {
 		s, err := aaws.New(v)
 		if err != nil {
-			log.Fatalln("Couldn't create a session to AWS.")
+			fmt.Println("Couldn't create a session to AWS. Please check your credentials.")
 		}
 
 		client := ec2.NewFromConfig(s)
