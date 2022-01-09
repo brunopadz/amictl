@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/pterm/pterm"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
@@ -14,18 +16,16 @@ import (
 )
 
 func init() {
-	awsCmd.AddCommand(delete)
+	awsCmd.AddCommand(deregister)
 }
 
-var delete = &cobra.Command{
-	Use:     "delete",
-	Short:   "Delete a single AMI.",
-	Long:    `Delete command deregister a single AMI. Check the docs for more info.`,
-	Example: `  amictl aws delete --region 111222333444 --ami ami-0x00000000f`,
+var deregister = &cobra.Command{
+	Use:     "deregister",
+	Short:   "Deregister a single AMI.",
+	Long:    `Deregister command deregisters / deletes a single AMI.`,
+	Example: `  amictl aws deregister --region us-east-1 --ami ami-0x00000000f`,
 	RunE:    runDelete,
 }
-
-//var dami *string
 
 func runDelete(cmd *cobra.Command, _ []string) error {
 
@@ -47,17 +47,12 @@ func runDelete(cmd *cobra.Command, _ []string) error {
 		ImageId: aws.String(ami),
 	}
 
-	w, err := a.DeregisterImage(context.TODO(), i)
+	_, err = a.DeregisterImage(context.TODO(), i)
 	if err != nil {
 		fmt.Println("Couldn't describe AMIs.")
 	}
 
-	fmt.Println(w)
-	//fmt.Println(o.ResultMetadata)
-
-	//for _, v := range o.ResultMetadata {
-	//
-	//}
+	pterm.FgLightCyan.Println("Image deregistered:", pterm.NewStyle(pterm.Bold).Sprint(aws.ToString(i.ImageId)))
 
 	return err
 }

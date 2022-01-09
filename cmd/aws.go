@@ -17,12 +17,14 @@ var awsCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(awsCmd)
 
-	delete.Flags().StringVarP(&ami, "ami", "a", "", "AMI ID")
+	deregister.Flags().StringVarP(&ami, "ami", "a", "", "AMI ID")
+	deregister.Flags().StringVarP(&region, "region", "r", "", "Region where the AMI was created")
 
 	inspect.Flags().StringVarP(&ami, "ami", "a", "", "AMI ID")
 	inspect.Flags().StringVarP(&region, "region", "r", "", "Region where the AMI was created")
 
-	delete.MarkFlagRequired("ami")
+	deregister.MarkFlagRequired("ami")
+	deregister.MarkFlagRequired("region")
 
 	inspect.MarkFlagRequired("ami")
 	inspect.MarkFlagRequired("region")
