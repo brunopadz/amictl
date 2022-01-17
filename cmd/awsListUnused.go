@@ -103,6 +103,9 @@ func runUnused(cmd *cobra.Command, _ []string) error {
 	l := len(d) - 1
 
 	err = pterm.DefaultTable.WithHasHeader().WithData(d).Render()
+	if err != nil {
+		fmt.Println("Couldn't print message. Try again or check your AWS credentials.")
+	}
 
 	if l <= 20 {
 		pterm.Println(pterm.Green(fmt.Sprintf("%d AMIs are not being utilized.", l)))

@@ -8,7 +8,9 @@ import (
 var awsCmd = &cobra.Command{
 	Use:   "aws",
 	Short: "Manages AWS AMIs",
-	Long:  "Manages AWS AMIs by account and region. It's possible to list used, not used and also inspect AMIs.",
+	Long: `Manages AWS AMIs by account and region. 
+It's possible to list used, not used, deregister/delete and also inspect AMIs.
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Println(cmd.Long)
 	},
