@@ -1,0 +1,15 @@
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - id: amictl
+    binary: amictl
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64

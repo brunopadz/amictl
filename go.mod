@@ -4,11 +4,14 @@ go 1.17
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.12.0
-    github.com/aws/aws-sdk-go-v2/config v1.12.0
-    github.com/aws/aws-sdk-go-v2/service/ec2 v1.27.0
+	github.com/aws/aws-sdk-go-v2/config v1.12.0
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.27.0
 	github.com/pterm/pterm v0.12.33
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/viper v1.10.1
+)
+
+require (
 	github.com/atomicgo/cursor v0.0.1 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.7.0 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.9.0 // indirect
