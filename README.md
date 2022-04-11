@@ -2,24 +2,29 @@
 
 # amictl
 
-amictl allows cloud operators/engineers to manage AMIs and Cloud Images. AWS is the only cloud provider supported
-to this date. 
+amictl allows cloud operators/engineers to manage AWS AMIs.
 
 With amictl you can list used and unused AMIs, inspect and deregister (delete) them.
 
 ## How to use
-
-### AWS Credentials
-
-As AWS is the only cloud provider supported, make sure you have your credentials configured correctly in 
-`~/.aws/credentials` or you can use [environment variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html) 
-such as `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
  
 ### Configuring amictl
 
-<-- amictl init -->
+Make sure you have your credentials configured correctly in
+`~/.aws/credentials` or you can use [environment variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html)
+such as `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`.
 
-<-- describe the config file -->
+Run `amictl init` to create a new config file. Add the AWS account ID and the regions you have AMIs.
+
+You can change the configuration later at `~/.amictl.yaml` (Linux/MacOS) or at `%HOMEPROFILE%/.amictl.yaml` (Windows).
+
+```yaml
+aws:
+  account: "12345678912"
+  regions:
+    - us-east-1
+    - us-east-2
+```
 
 ### Listing AMIs
 
@@ -40,9 +45,6 @@ $ amictl aws list-unused
 It's important to highlight that list operations will run on all regions defined in `$HOME/.amictl.yaml`.
 
 Another super important thing is that `amictl` will colorize the output depending on how many AMIs are not being used.
-<p style="color: red">Red outputs means that you could be saving some money.</p>
-<p style="color: yellow">Yellow outputs are warnings and it's probably a good idea to check those AMIs.</p>
-<p style="color: green">And green means everything's fine.</p>
 
 ### Inspecting AMIs
 
