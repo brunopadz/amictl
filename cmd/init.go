@@ -87,6 +87,9 @@ func runInit(cmd *cobra.Command, _ []string) error {
 	}
 
 	err = ioutil.WriteFile(p, d, 0600)
+	if err != nil {
+		fmt.Println("Couldn't write file to $HOMEDIR.")
+	}
 
 	return nil
 }
