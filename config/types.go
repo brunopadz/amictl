@@ -1,7 +1,7 @@
 package config
 
 type Config struct {
-	_ AwsConfig
+	Aws AwsConfig
 }
 
 type AwsConfig struct {
